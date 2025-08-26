@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import LoginForm, RegisterForm
 
 
 def home(request):
@@ -75,3 +77,27 @@ def recipe_detail(request, slug):
 
 def about(request):
     return render(request, 'about.html')
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            messages.success(request, 'Logged in successfully (demo).')
+            return redirect('home')
+        messages.error(request, 'Please correct the errors below.')
+    else:
+        form = LoginForm()
+    return render(request, 'auth/login.html', { 'form': form })
+
+
+def register_view(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            messages.success(request, 'Account created (demo). You can now log in.')
+            return redirect('login')
+        messages.error(request, 'Please correct the errors below.')
+    else:
+        form = RegisterForm()
+    return render(request, 'auth/register.html', { 'form': form })

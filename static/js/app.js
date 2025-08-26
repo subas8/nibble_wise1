@@ -95,4 +95,52 @@ document.addEventListener('DOMContentLoaded', () => {
 			cards.forEach(c => recipeGrid.appendChild(c));
 		});
 	}
+
+	// Client-side auth form validation
+	function showError(el, msg) {
+		let p = el.parentElement.querySelector('.client-error');
+		if (!p) {
+			p = document.createElement('p');
+			p.className = 'client-error text-sm text-red-600 mt-1';
+			el.parentElement.appendChild(p);
+		}
+		p.textContent = msg;
+	}
+	function clearError(el) {
+		const p = el.parentElement.querySelector('.client-error');
+		if (p) p.remove();
+	}
+	function validateEmail(value) {
+		return /.+@.+\..+/.test(value);
+	}
+
+	const loginForm = document.getElementById('login-form');
+	if (loginForm) {
+		loginForm.addEventListener('submit', (e) => {
+			let ok = true;
+			const email = loginForm.querySelector('input[type="email"]');
+			const password = loginForm.querySelector('input[type="password"]');
+			clearError(email); clearError(password);
+			if (!validateEmail(email.value)) { showError(email, 'Enter a valid email'); ok = false; }
+			if ((password.value || '').length < 6) { showError(password, 'Password must be at least 6 characters'); ok = false; }
+			if (!ok) e.preventDefault();
+		});
+	}
+
+	const registerForm = document.getElementById('register-form');
+	if (registerForm) {
+		registerForm.addEventListener('submit', (e) => {
+			let ok = true;
+			const name = registerForm.querySelector('input[name="name"]');
+			const email = registerForm.querySelector('input[type="email"]');
+			const p1 = registerForm.querySelector('input[name="password1"]');
+			const p2 = registerForm.querySelector('input[name="password2"]');
+			[name, email, p1, p2].forEach(clearError);
+			if ((name.value || '').trim().length < 2) { showError(name, 'Name must be at least 2 characters'); ok = false; }
+			if (!validateEmail(email.value)) { showError(email, 'Enter a valid email'); ok = false; }
+			if ((p1.value || '').length < 6) { showError(p1, 'Password must be at least 6 characters'); ok = false; }
+			if (p1.value !== p2.value) { showError(p2, 'Passwords do not match'); ok = false; }
+			if (!ok) e.preventDefault();
+		});
+	}
 });
